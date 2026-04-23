@@ -3,6 +3,34 @@ import { supabase } from '#/lib/supabase';
 import { toFrontendCategory, toFrontendProduct, type DbCategory, type DbMenuItem } from '#/lib/menuHelpers';
 import { ORGANIZATION_ID } from '#/lib/constants';
 
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  primary_color: string | null;
+  is_disabled: boolean;
+}
+
+async function fetchOrganization(id: string): Promise<Organization> {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data as Organization;
+}
+
+export function organizationQueryOptions(id: string = ORGANIZATION_ID) {
+  return queryOptions({
+    queryKey: ['organization', id],
+    queryFn: () => fetchOrganization(id),
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
 async function fetchMenuData(organizationId: string) {
   const [categoriesRes, itemsRes] = await Promise.all([
     supabase.from('categories').select('*').order('name', { ascending: true }),

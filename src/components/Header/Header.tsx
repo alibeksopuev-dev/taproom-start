@@ -1,15 +1,18 @@
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '#/components/ui/button';
 import { Badge } from '#/components/ui/badge';
 import { useCartStore } from '#/lib/store';
 import { LanguageSwitcher } from '#/components/LanguageSwitcher/LanguageSwitcher';
+import { organizationQueryOptions } from '#/queries/menu';
 
 export function Header() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const itemCount = useCartStore((state) => state.getItemCount());
   const isHome = pathname === '/';
+  const { data: organization } = useQuery(organizationQueryOptions());
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -32,7 +35,17 @@ export function Header() {
 
           <Link to="/" className="flex-1 text-center">
             <div className="flex justify-center items-center">
-              <span className="text-xl font-bold text-gray-900">81 Taproom</span>
+              {organization?.logo_url ? (
+                <img
+                  src={organization.logo_url}
+                  alt={organization.name ?? '81 Taproom'}
+                  className="h-8 w-40 object-contain"
+                />
+              ) : (
+                <span className="text-xl font-bold text-gray-900">
+                  {organization?.name ?? '81 Taproom'}
+                </span>
+              )}
             </div>
           </Link>
 

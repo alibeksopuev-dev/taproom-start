@@ -1,5 +1,5 @@
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
-import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
+import { Link, useRouter, useRouterState } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '#/components/ui/button';
 import { Badge } from '#/components/ui/badge';
@@ -8,7 +8,7 @@ import { LanguageSwitcher } from '#/components/LanguageSwitcher/LanguageSwitcher
 import { organizationQueryOptions } from '#/queries/menu';
 
 export function Header() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const itemCount = useCartStore((state) => state.getItemCount());
   const isHome = pathname === '/';
@@ -23,7 +23,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate({ to: '..', from: pathname })}
+                onClick={() => router.history.back()}
                 className="min-h-[44px] min-w-[44px]"
               >
                 <ArrowLeft size={20} />

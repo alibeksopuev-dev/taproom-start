@@ -1,4 +1,5 @@
 # TanStack Start — Руководство на русском языке
+
 ### На основе проекта `taproom-start` (81 Taproom, Đà Nẵng)
 
 ---
@@ -22,13 +23,13 @@
 
 **TanStack Start** — это full-stack React-фреймворк поверх TanStack Router. Он добавляет к клиентскому роутингу:
 
-| Возможность | Без Start (SPA) | С TanStack Start |
-|---|---|---|
-| Рендеринг | Только в браузере | Сервер + браузер (SSR) |
-| SEO | ❌ Боты видят пустой `<div>` | ✅ Боты видят полный HTML |
-| Первая загрузка | Долгая (нужен JS) | Быстрая (HTML сразу) |
-| Server Functions | ❌ | ✅ RPC прямо в компонентах |
-| Типобезопасность | Частичная | 100% end-to-end |
+| Возможность      | Без Start (SPA)              | С TanStack Start           |
+| ---------------- | ---------------------------- | -------------------------- |
+| Рендеринг        | Только в браузере            | Сервер + браузер (SSR)     |
+| SEO              | ❌ Боты видят пустой `<div>` | ✅ Боты видят полный HTML  |
+| Первая загрузка  | Долгая (нужен JS)            | Быстрая (HTML сразу)       |
+| Server Functions | ❌                           | ✅ RPC прямо в компонентах |
+| Типобезопасность | Частичная                    | 100% end-to-end            |
 
 В твоём проекте уже используется TanStack Start — об этом говорит структура `src/routes/__root.tsx` с `shellComponent`, `HeadContent` и `Scripts`.
 
@@ -63,15 +64,18 @@ SPA-навигация работает дальше без перезагруз
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: '81 Taproom' },
-      { name: 'description', content: 'Craft beer taproom menu — 81 Taproom, Đà Nẵng' },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "81 Taproom" },
+      {
+        name: "description",
+        content: "Craft beer taproom menu — 81 Taproom, Đà Nẵng",
+      },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument, // ← рендерится ТОЛЬКО на сервере
-})
+});
 
 function RootDocument({ children }) {
   return (
@@ -87,7 +91,7 @@ function RootDocument({ children }) {
         <Scripts /> {/* ← JS-бандлы для гидратации */}
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -101,7 +105,7 @@ function RootDocument({ children }) {
 ```tsx
 // ❌ Текущий код — данные недоступны при SSR
 function Home() {
-  const { data, isLoading } = useQuery(menuQueryOptions()) // запрос в браузере
+  const { data, isLoading } = useQuery(menuQueryOptions()); // запрос в браузере
   // ...
 }
 ```
@@ -130,10 +134,13 @@ __root.tsx    → title: "81 Taproom"
 // src/routes/__root.tsx ✅ Глобальные мета
 head: () => ({
   meta: [
-    { title: '81 Taproom' },
-    { name: 'description', content: 'Craft beer taproom menu — 81 Taproom, Đà Nẵng' },
+    { title: "81 Taproom" },
+    {
+      name: "description",
+      content: "Craft beer taproom menu — 81 Taproom, Đà Nẵng",
+    },
   ],
-})
+});
 ```
 
 Но в `category.$categoryId.tsx` и `index.tsx` нет своих `head` — все страницы имеют одинаковый тайтл. Для SEO это плохо.
@@ -143,35 +150,35 @@ head: () => ({
 ```tsx
 // src/routes/category.$categoryId.tsx
 
-export const Route = createFileRoute('/category/$categoryId')({
+export const Route = createFileRoute("/category/$categoryId")({
   validateSearch: (search) => searchSchema.parse(search),
-  
+
   // Добавляем loader — получаем данные ДО рендера
   loader: async ({ params, context }) => {
-    const data = await context.queryClient.ensureQueryData(menuQueryOptions())
-    const category = data.categories.find(c => c.id === params.categoryId)
-    return { category }
+    const data = await context.queryClient.ensureQueryData(menuQueryOptions());
+    const category = data.categories.find((c) => c.id === params.categoryId);
+    return { category };
   },
-  
+
   // head получает loaderData — данные уже есть!
   head: ({ loaderData }) => ({
     meta: [
       {
         title: loaderData?.category
           ? `${loaderData.category.name} — 81 Taproom`
-          : '81 Taproom'
+          : "81 Taproom",
       },
       {
-        name: 'description',
+        name: "description",
         content: loaderData?.category
           ? `Смотри ${loaderData.category.name} в меню 81 Taproom, Đà Nẵng`
-          : 'Craft beer taproom menu'
+          : "Craft beer taproom menu",
       },
     ],
   }),
-  
+
   component: CategoryView,
-})
+});
 ```
 
 ### Open Graph теги (для соцсетей)
@@ -180,16 +187,19 @@ export const Route = createFileRoute('/category/$categoryId')({
 head: ({ loaderData }) => ({
   meta: [
     { title: `${loaderData.category.name} — 81 Taproom` },
-    { name: 'description', content: 'Beer menu' },
+    { name: "description", content: "Beer menu" },
     // Open Graph
-    { property: 'og:title', content: `${loaderData.category.name} — 81 Taproom` },
-    { property: 'og:description', content: 'Craft beer in Da Nang' },
-    { property: 'og:image', content: 'https://yoursite.com/og-image.jpg' },
-    { property: 'og:type', content: 'website' },
+    {
+      property: "og:title",
+      content: `${loaderData.category.name} — 81 Taproom`,
+    },
+    { property: "og:description", content: "Craft beer in Da Nang" },
+    { property: "og:image", content: "https://yoursite.com/og-image.jpg" },
+    { property: "og:type", content: "website" },
     // Twitter Card
-    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: "twitter:card", content: "summary_large_image" },
   ],
-})
+});
 ```
 
 ---
@@ -219,22 +229,22 @@ HTML с контентом отправляется браузеру ✅
 ```tsx
 // src/routes/category.$categoryId.tsx
 
-import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { menuQueryOptions } from '#/queries/menu'
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { menuQueryOptions } from "#/queries/menu";
 
-export const Route = createFileRoute('/category/$categoryId')({
+export const Route = createFileRoute("/category/$categoryId")({
   // loader — запускается на сервере, заполняет QueryClient кэш
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(menuQueryOptions()),
 
   component: CategoryView,
-})
+});
 
 function CategoryView() {
   // useQuery теперь читает из кэша — нет лишнего запроса!
   // isLoading = false с первого рендера
-  const { data } = useQuery(menuQueryOptions())
+  const { data } = useQuery(menuQueryOptions());
   // ...
 }
 ```
@@ -246,34 +256,34 @@ function CategoryView() {
 
 ```tsx
 // src/router.tsx
-import { createRouter } from '@tanstack/react-router'
-import { QueryClient } from '@tanstack/react-query'
-import { routeTree } from './routeTree.gen'
+import { createRouter } from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
+import { routeTree } from "./routeTree.gen";
 
-export const queryClient = new QueryClient()
+export const queryClient = new QueryClient();
 
 export const router = createRouter({
   routeTree,
   context: {
     queryClient, // ← делает queryClient доступным во всех loaders
   },
-  defaultPreload: 'intent', // предзагрузка при hover на ссылку
-})
+  defaultPreload: "intent", // предзагрузка при hover на ссылку
+});
 ```
 
 ```tsx
 // src/routes/__root.tsx
-import { createRootRouteWithContext } from '@tanstack/react-router'
-import type { QueryClient } from '@tanstack/react-query'
+import { createRootRouteWithContext } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
 
 // Описываем тип контекста
 interface RouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   // ... head, shellComponent
-})
+});
 ```
 
 ---
@@ -283,6 +293,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 ### Что это и зачем
 
 `createServerFn` — это RPC (Remote Procedure Call) прямо в TypeScript-файле. Ты пишешь функцию с пометкой "серверная", и TanStack Start автоматически:
+
 - На сервере — вызывает её напрямую
 - На клиенте — делает HTTP-запрос и получает результат
 
@@ -295,23 +306,24 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 ```tsx
 // src/queries/menuServer.ts
-import { createServerFn } from '@tanstack/react-start'
-import { supabase } from '#/lib/supabase'
-import { ORGANIZATION_ID } from '#/lib/constants'
+import { createServerFn } from "@tanstack/react-start";
+import { supabase } from "#/lib/supabase";
+import { ORGANIZATION_ID } from "#/lib/constants";
 
 // 'use server' директива — этот код НИКОГДА не попадёт в браузер
-export const fetchMenuOnServer = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const fetchMenuOnServer = createServerFn({ method: "GET" }).handler(
+  async () => {
     // Здесь можно использовать process.env, секреты, прямое подключение к БД
     const { data, error } = await supabase
-      .from('menu_items')
-      .select('*, price_per_size (*), category:categories (*)')
-      .eq('organization_id', ORGANIZATION_ID)
-      .eq('is_disabled', false)
+      .from("menu_items")
+      .select("*, price_per_size (*), category:categories (*)")
+      .eq("organization_id", ORGANIZATION_ID)
+      .eq("is_disabled", false);
 
-    if (error) throw error
-    return data
-  })
+    if (error) throw error;
+    return data;
+  },
+);
 ```
 
 ```tsx
@@ -328,12 +340,12 @@ function Home() {
 
 ### Разница: с Server Functions vs без
 
-| | Текущий код (useQuery) | С createServerFn |
-|---|---|---|
-| Ключ API в браузере | ✅ Виден | ❌ Скрыт |
-| Первый рендер | Спиннер | Данные сразу |
-| SEO | Пустая страница | Полный HTML |
-| Дополнительный HTTP-запрос | Всегда | Нет при SSR |
+|                            | Текущий код (useQuery) | С createServerFn |
+| -------------------------- | ---------------------- | ---------------- |
+| Ключ API в браузере        | ✅ Виден               | ❌ Скрыт         |
+| Первый рендер              | Спиннер                | Данные сразу     |
+| SEO                        | Пустая страница        | Полный HTML      |
+| Дополнительный HTTP-запрос | Всегда                 | Нет при SSR      |
 
 ---
 
@@ -341,12 +353,12 @@ function Home() {
 
 ### Важно понять разницу
 
-| | SSR | SSG |
-|---|---|---|
-| Когда генерируется | При каждом запросе | При сборке (`npm run build`) |
-| Данные | Свежие | Замороженные на момент сборки |
-| Скорость | Быстро | Очень быстро (просто файл) |
-| Подходит для | Динамичный контент | Статичный контент |
+|                    | SSR                | SSG                           |
+| ------------------ | ------------------ | ----------------------------- |
+| Когда генерируется | При каждом запросе | При сборке (`npm run build`)  |
+| Данные             | Свежие             | Замороженные на момент сборки |
+| Скорость           | Быстро             | Очень быстро (просто файл)    |
+| Подходит для       | Динамичный контент | Статичный контент             |
 
 ### Подходит ли SSG для taproom-start?
 
@@ -358,18 +370,18 @@ function Home() {
 
 ```ts
 // vite.config.ts (экспериментально)
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 export default defineConfig({
   plugins: [
     tanstackStart({
       prerender: {
         // Предрендерить эти пути
-        routes: ['/', '/category/beer', '/category/wine'],
+        routes: ["/", "/category/beer", "/category/wine"],
       },
     }),
   ],
-})
+});
 ```
 
 > [!WARNING]
@@ -384,7 +396,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 5 * 60 * 1000 }, // 5 минут кэш
   },
-})
+});
 ```
 
 Для меню бара можно поднять до 30 минут — меню не меняется каждую минуту:
@@ -393,11 +405,11 @@ const queryClient = new QueryClient({
 // src/queries/menu.ts
 export function menuQueryOptions() {
   return queryOptions({
-    queryKey: ['menu', ORGANIZATION_ID],
+    queryKey: ["menu", ORGANIZATION_ID],
     queryFn: () => fetchMenuData(ORGANIZATION_ID),
-    staleTime: 30 * 60 * 1000,  // 30 минут
-    gcTime: 60 * 60 * 1000,     // 1 час в памяти
-  })
+    staleTime: 30 * 60 * 1000, // 30 минут
+    gcTime: 60 * 60 * 1000, // 1 час в памяти
+  });
 }
 ```
 
@@ -422,29 +434,29 @@ src/routes/
 
 ```tsx
 // В category.$categoryId.tsx — $categoryId это "параметр"
-const { categoryId } = Route.useParams()
+const { categoryId } = Route.useParams();
 // categoryId: string — TypeScript знает об этом параметре!
 
 // В index.tsx с validateSearch
-const { search } = Route.useSearch()
+const { search } = Route.useSearch();
 // search: string | undefined — типизировано через zod-схему
 ```
 
 ### Навигация с полной типизацией
 
 ```tsx
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from "@tanstack/react-router";
 
 // TypeScript проверит, что '/category/$categoryId' существует
 // и что params.categoryId — обязательный string
-<Link to="/category/$categoryId" params={{ categoryId: 'beer' }}>
+<Link to="/category/$categoryId" params={{ categoryId: "beer" }}>
   Пиво
-</Link>
+</Link>;
 
 // useNavigate тоже типизирован
-const navigate = useNavigate()
-navigate({ to: '/cart' }) // ✅
-navigate({ to: '/nonexistent' }) // ❌ TypeScript ошибка
+const navigate = useNavigate();
+navigate({ to: "/cart" }); // ✅
+navigate({ to: "/nonexistent" }); // ❌ TypeScript ошибка
 ```
 
 ---
@@ -452,16 +464,20 @@ navigate({ to: '/nonexistent' }) // ❌ TypeScript ошибка
 ## 8. Практические задания для изучения
 
 ### Задание 1: Добавить `loader` в роут `index`
+
 **Цель:** Понять как loader убирает спиннер и ускоряет первый рендер
 
 **Что сделать:**
+
 1. Настроить `RouterContext` с `QueryClient` в `router.tsx`
 2. Изменить `__root.tsx` на `createRootRouteWithContext`
 3. Добавить `loader` в `index.tsx`:
+
 ```tsx
 loader: ({ context: { queryClient } }) =>
   queryClient.ensureQueryData(menuQueryOptions()),
 ```
+
 4. Открыть DevTools → Network → проверить, что на странице нет лишнего запроса к Supabase при первой загрузке
 
 **Как проверить:** Отключи JavaScript в браузере (DevTools → Settings → Disable JS). Страница всё равно должна показывать меню.
@@ -469,49 +485,55 @@ loader: ({ context: { queryClient } }) =>
 ---
 
 ### Задание 2: SEO для страниц категорий
+
 **Цель:** Научиться управлять `<head>` тегами динамически
 
 **Что сделать:**
+
 1. Добавить `head` в `category.$categoryId.tsx` с динамическим тайтлом
 2. Добавить Open Graph теги
 3. Проверить результат
 
 **Как проверить:**
+
 ```bash
 # Просмотр HTML с сервера (без JS)
 curl http://localhost:3000/category/beer | grep -E "<title>|<meta"
 ```
+
 Ты должен увидеть динамический тайтл прямо в HTML-ответе сервера.
 
 ---
 
 ### Задание 3: Создать Server Function для заказа
+
 **Цель:** Понять `createServerFn` и как скрыть логику на сервере
 
 **Что сделать:**
+
 ```tsx
 // src/actions/order.ts
-import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 const orderSchema = z.object({
   tableNumber: z.number(),
   items: z.array(z.object({ id: z.string(), qty: z.number() })),
-})
+});
 
-export const submitOrder = createServerFn({ method: 'POST' })
+export const submitOrder = createServerFn({ method: "POST" })
   .validator(orderSchema)
   .handler(async ({ data }) => {
     // Здесь: валидация, запись в Supabase, отправка уведомления
     const { data: order, error } = await supabase
-      .from('orders')
-      .insert({ table_number: data.tableNumber, status: 'pending' })
+      .from("orders")
+      .insert({ table_number: data.tableNumber, status: "pending" })
       .select()
-      .single()
-    
-    if (error) throw error
-    return order
-  })
+      .single();
+
+    if (error) throw error;
+    return order;
+  });
 ```
 
 Вызов из компонента корзины — точно так же как обычная функция!
@@ -519,20 +541,22 @@ export const submitOrder = createServerFn({ method: 'POST' })
 ---
 
 ### Задание 4: Streaming SSR для страницы заказа
+
 **Цель:** Понять как Suspense + SSR работают вместе
 
 **Что сделать:**
+
 ```tsx
 // src/routes/order.$orderId.tsx
-import { Suspense } from 'react'
+import { Suspense } from "react";
 
-export const Route = createFileRoute('/order/$orderId')({
+export const Route = createFileRoute("/order/$orderId")({
   component: () => (
     <Suspense fallback={<div>Загрузка заказа...</div>}>
       <OrderDetails />
     </Suspense>
   ),
-})
+});
 ```
 
 При SSR + Suspense сервер **стримит** HTML — сначала отправляет оболочку с fallback, потом добирасывает данные. Юзер видит что-то быстрее.
@@ -540,17 +564,19 @@ export const Route = createFileRoute('/order/$orderId')({
 ---
 
 ### Задание 5: Prefetch при hover
+
 **Цель:** Понять как TanStack Router ускоряет навигацию
 
 **Что сделать:**
+
 ```tsx
 // src/router.tsx
 export const router = createRouter({
   routeTree,
   context: { queryClient },
-  defaultPreload: 'intent', // ← prefetch при наведении мыши
+  defaultPreload: "intent", // ← prefetch при наведении мыши
   defaultPreloadStaleTime: 0,
-})
+});
 ```
 
 **Как проверить:** Открой Network tab, наведи мышь на категорию — увидишь запрос к Supabase ещё до клика.
@@ -558,26 +584,30 @@ export const router = createRouter({
 ---
 
 ### Задание 6: Middleware — проверка авторизации
+
 **Цель:** Понять серверный middleware в TanStack Start
 
 **Что сделать:**
+
 ```tsx
 // src/middleware/auth.ts
-import { createMiddleware } from '@tanstack/react-start'
+import { createMiddleware } from "@tanstack/react-start";
 
-export const authMiddleware = createMiddleware().server(async ({ next, data }) => {
-  const session = await getServerSession()
-  if (!session) {
-    throw redirect({ to: '/login' })
-  }
-  return next({ context: { user: session.user } })
-})
+export const authMiddleware = createMiddleware().server(
+  async ({ next, data }) => {
+    const session = await getServerSession();
+    if (!session) {
+      throw redirect({ to: "/login" });
+    }
+    return next({ context: { user: session.user } });
+  },
+);
 
 // Применить к роуту:
-export const Route = createFileRoute('/admin')({
+export const Route = createFileRoute("/admin")({
   middleware: [authMiddleware],
   component: AdminPage,
-})
+});
 ```
 
 ---
@@ -585,6 +615,7 @@ export const Route = createFileRoute('/admin')({
 ## 9. Как проверить что SSR работает
 
 ### Метод 1: curl (самый надёжный)
+
 ```bash
 # Запусти dev сервер
 npm run dev
@@ -595,15 +626,18 @@ curl http://localhost:3000/ | grep -c "data-"
 ```
 
 ### Метод 2: Отключить JS в браузере
+
 1. Chrome DevTools → три точки → Settings
 2. Preferences → Debugger → "Disable JavaScript"
 3. Перезагрузи страницу — контент должен быть виден
 
 ### Метод 3: View Source
+
 - Правый клик → View Page Source (не Inspect!)
 - Ищи данные меню в HTML — если SSR работает, они там есть
 
 ### Метод 4: Lighthouse SEO аудит
+
 ```bash
 # Установи lighthouse глобально
 npm install -g lighthouse
@@ -616,12 +650,12 @@ lighthouse http://localhost:3000 --only-categories=seo,performance
 
 ## 10. Шпаргалка: текущие проблемы и как их исправить
 
-| Проблема | Текущий код | Решение |
-|---|---|---|
-| Данные загружаются клиентски | `useQuery()` без `loader` | Добавить `loader: ({ context }) => context.queryClient.ensureQueryData(...)` |
-| Одинаковый тайтл на всех страницах | `head` только в `__root.tsx` | Добавить `head` в каждый роут |
-| QueryClient не в контексте роутера | Создан в `__root.tsx` | Перенести в `router.tsx` и добавить `context: { queryClient }` |
-| `__root.tsx` не типизирован по контексту | `createRootRoute` | Заменить на `createRootRouteWithContext<{ queryClient: QueryClient }>()` |
+| Проблема                                 | Текущий код                  | Решение                                                                      |
+| ---------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------- |
+| Данные загружаются клиентски             | `useQuery()` без `loader`    | Добавить `loader: ({ context }) => context.queryClient.ensureQueryData(...)` |
+| Одинаковый тайтл на всех страницах       | `head` только в `__root.tsx` | Добавить `head` в каждый роут                                                |
+| QueryClient не в контексте роутера       | Создан в `__root.tsx`        | Перенести в `router.tsx` и добавить `context: { queryClient }`               |
+| `__root.tsx` не типизирован по контексту | `createRootRoute`            | Заменить на `createRootRouteWithContext<{ queryClient: QueryClient }>()`     |
 
 ---
 
@@ -632,3 +666,33 @@ lighthouse http://localhost:3000 --only-categories=seo,performance
 - [TanStack Router — SEO / Head](https://tanstack.com/start/latest/docs/framework/react/guide/seo)
 - [Server Functions](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions)
 - [TanStack Query — queryOptions](https://tanstack.com/query/latest/docs/framework/react/reference/queryOptions)
+
+Что было сделано
+Задание 1 — Loader + RouterContext
+Проблема была: данные меню загружались только в браузере (через useQuery). Сервер отдавал пустую страницу → пользователь видел крутилку.
+
+Три изменения:
+
+1. src/router.tsx — QueryClient перенесён сюда и передан в context роутера:
+
+context: { queryClient }
+Теперь все loaders в любом роуте могут обращаться к context.queryClient.
+
+2. src/routes/\_\_root.tsx — заменён createRootRoute на createRootRouteWithContext<RouterContext>(). Это говорит TypeScript: "в контексте роутера точно есть queryClient типа QueryClient". queryClient теперь импортируется из router.tsx, а не создаётся локально.
+
+3. src/routes/index.tsx и src/routes/category.$categoryId.tsx — добавлен loader:
+
+loader: ({ context: { queryClient } }) =>
+queryClient.ensureQueryData(menuQueryOptions())
+ensureQueryData — если данные уже есть в кеше, берёт оттуда. Если нет — делает запрос на сервере. Когда компонент рендерится, useQuery читает уже готовый кеш → isLoading = false с первого рендера, крутилки нет.
+
+Задание 2 — Динамический SEO head
+Проблема была: все страницы имели одинаковый <title>81 Taproom</title>.
+
+В src/routes/category.$categoryId.tsx добавлен head, который получает данные из loaderData:
+
+/category/beer → <title>Beer — 81 Taproom</title>
+/category/wine → <title>Wine — 81 Taproom</title>
+Плюс добавлены og:title и og:description для корректного отображения при шаринге в соцсетях.
+
+Итог: страница теперь рендерится на сервере с данными, крутилка при первой загрузке пропала, у каждой категории свой тайтл в браузере и для поисковиков.

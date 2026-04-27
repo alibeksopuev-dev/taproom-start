@@ -19,6 +19,8 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/')({
   validateSearch: (search) => searchSchema.parse(search),
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(menuQueryOptions()),
   component: Home,
 })
 

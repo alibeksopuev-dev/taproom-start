@@ -18,6 +18,36 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/category/$categoryId')({
   validateSearch: (search) => searchSchema.parse(search),
+  loader: async ({ params, context: { queryClient } }) => {
+    const data = await queryClient.ensureQueryData(menuQueryOptions())
+    const category = data.categories.find((c) => c.id === params.categoryId)
+    return { categoryName: category?.name ?? null }
+  },
+  head: ({ loaderData }) => ({
+    meta: [
+      {
+        title: loaderData?.categoryName
+          ? `${loaderData.categoryName} — 81 Taproom`
+          : '81 Taproom',
+      },
+      {
+        name: 'description',
+        content: loaderData?.categoryName
+          ? `${loaderData.categoryName} menu at 81 Taproom, Đà Nẵng`
+          : 'Craft beer taproom menu — 81 Taproom, Đà Nẵng',
+      },
+      {
+        property: 'og:title',
+        content: loaderData?.categoryName
+          ? `${loaderData.categoryName} — 81 Taproom`
+          : '81 Taproom',
+      },
+      {
+        property: 'og:description',
+        content: 'Craft beer taproom in Đà Nẵng, Vietnam',
+      },
+    ],
+  }),
   component: CategoryView,
 })
 
